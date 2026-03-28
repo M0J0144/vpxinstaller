@@ -2,7 +2,7 @@
 
 # Fetch latest release URLs dynamically
 VPX_URL=$(curl -s https://api.github.com/repos/vpinball/vpinball/releases/latest | grep "browser_download_url.*linux-x64.zip" | cut -d '"' -f 4)
-VPXTOOL_URL=$(curl -s https://api.github.com/repos/francisdb/vpxtool/releases/latest | grep "browser_download_url.*Linux-x86_64-musl.*.tar.gz" | cut -d '"' -f 4)
+VPXTOOL_URL=$(curl -s https://api.github.com/repos/francisdb/vpxtool/releases/latest | grep "browser_download_url.*linux-x86_64.*\.tar\.gz" | cut -d '"' -f 4)
 
 # Prompt user for installation directory or use default
 default_dir="$HOME/VPinballX"
@@ -29,7 +29,7 @@ mkdir -p "$PINMAME/ini"
 echo "Downloading Visual Pinball X..."
 wget -O /tmp/vpx.zip "$VPX_URL"
 echo "Extracting zip file..."
-unzip /tmp/vpx.zip -d /tmp/vpx_extracted
+unzip -o /tmp/vpx.zip -d /tmp/vpx_extracted
 
 # Create directory for tar.gz extraction
 mkdir -p /tmp/vpx_extracted_contents
@@ -51,12 +51,11 @@ cd "$INSTALL" && ./VPinballX_GL
 echo "Downloading vpxtool..."
 wget -O /tmp/vpxtool.tar.gz "$VPXTOOL_URL"
 echo "Extracting..."
-mkdir -p "$INSTALL/vpxtool"
 tar -xzf /tmp/vpxtool.tar.gz -C "$INSTALL"
 rm /tmp/vpxtool.tar.gz
 
 echo "Running vpxtool setup..."
-cd "$INSTALL" && ./vpxtool config setup
+cd "$INSTALL" && chmod +x ./vpxtool && ./vpxtool config setup
 
 echo "vpxtool installed and configured."
 
@@ -78,7 +77,7 @@ if [[ "\$confirm" != "y" ]]; then
 fi
 
 echo "Proceeding with uninstallation..."
-rm -rf "$INSTALL" "$PINMAME" "$VPXTOOL_CFG" "$HOME/.vpinball"
+rm -rf "$INSTALL" "$PINMAME" "$HOME/.config/vpxtool" "$HOME/.vpinball"
 read -p "Uninstallation complete!"
 EOL
 chmod +x "$INSTALL/uninstall.sh"
